@@ -3,6 +3,7 @@
 //namespace Controllers;
 
 use Models\Users;
+use Models\Sessions;
 
 class UsersController
 {
@@ -72,6 +73,26 @@ class UsersController
         $this->model->where('password', '=', $data['password']);
 
         $user = $this->model->first();
+
+        if (!$user) {
+
+            return [
+                'error' => true,
+                'result' => 'User not found'
+            ];
+
+        }
+
+        unset($user['password']);
+
+        $session = new Sessions($user);
+        $session->auth();
+        $user['token'] = $session->getToken();
+
+        return [
+            'error' => false,
+            'result' => $user
+        ];
 
     }
 

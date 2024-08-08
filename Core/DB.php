@@ -79,15 +79,15 @@ class DB{
 
             $this->query .= ' WHERE ';
             foreach ($this->wheres as $where) {
-                $this->query .= $where[0] . ' ' . $where[1] . ' :' . $where[0] . ' AND ';
+                $this->query .= $where[0] . $where[1] . ':' . $where[0] . ' AND ';
             }
 
             $this->query = rtrim($this->query, ' AND ');
 
         }
 
-        $this->query .= 'ORDER BY id DESC LIMIT 1';
-
+        $this->query .= ' ORDER BY id DESC LIMIT 1';
+        
         $stmt = $this->pdo->prepare($this->query);
 
         if (count($this->wheres) > 0) {
@@ -97,7 +97,7 @@ class DB{
             }
 
         }
-
+        
         $stmt->execute();
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
