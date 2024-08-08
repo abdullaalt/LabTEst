@@ -9,7 +9,7 @@ class DB{
     private $stmt;
 
     private $wheres = [];
-
+    private $data;
     private string $query;
 
     public function __construct($table){
@@ -61,23 +61,70 @@ class DB{
 
     }
 
+    public function update(){
+
+        $keys = array_keys($this->data);
+
+        $this->query = 'UPDATE ' . $this->table . ' SET ';
+
+        foreach($keys as $key){
+            $this->query .= $key . ' = :' . $key . ', ';
+        }
+
+        $this->query = rtrim($this->query, ', ');
+
+        if (count($this->wheres) > 0) {
+
+            $this->query .= ' WHERE ';
+            foreach ($this->wheres as $where) {
+                $this->query .= $where[0] . $where[1] . ':' . $where[0] . ' AND ';
+            }
+
+            $this->query = rtrim($this->query, ' AND ');
+
+        }
+
+        $stmt = $this->pdo->prepare($this->query);
+
+        if (count($this->wheres) > 0) {
+
+            foreach ($this->wheres as $where) {
+                $stmt->bindParam(':' . $where[0], $where[2]);
+            }
+
+        }
+
+        foreach($this->data as $key => $value){
+            $stmt->bindParam(':'.$key, $this->data[$key]);
+        }
+
+        $stmt->execute();
+
+        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $data; 
+
+    }
+
     public function prepare($data){
 
-        $keys = array_keys($data);
-
-        $this->query = 'INSERT INTO ' . $this->table . ' (' . implode(',', $keys) . ') VALUES (:' . implode(',:', $keys) . ')';
-
-        $this->stmt = $this->pdo->prepare($this->query);
-
-        foreach($data as $key => $value){
-            $this->stmt->bindParam(':'.$key, $data[$key]);
-        }
+        $this->data = $data;
 
         return $this;
         
     }
 
     public function insert(){
+
+        $keys = array_keys($this->data);
+
+        $this->query = 'INSERT INTO ' . $this->table . ' (' . implode(',', $keys) . ') VALUES (:' . implode(',:', $keys) . ')';
+
+        $this->stmt = $this->pdo->prepare($this->query);
+
+        foreach($this->data as $key => $value){
+            $this->stmt->bindParam(':'.$key, $this->data[$key]);
+        }
 
         $this->stmt->execute();
 

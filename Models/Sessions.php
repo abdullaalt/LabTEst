@@ -11,7 +11,7 @@ class Sessions extends Models{
 
     private $token;
 
-    public function __construct($user){
+    public function __construct($user = false){
 
         $this->descriptor = $this->getModel($this->table);
 
@@ -25,7 +25,7 @@ class Sessions extends Models{
 
         $data = [
             'user_id' => $this->user['id'],
-            'token' => $token
+            'token' => md5($token)
         ];
 
         $this->fill($data);
@@ -35,6 +35,20 @@ class Sessions extends Models{
         $this->token = $token;
 
         return $this;
+
+    }
+
+    public function check($token){
+
+        $this->where('token', '=', md5($token));
+
+        $session = $this->first();
+        
+        if (!$session) {
+            return false;
+        }
+        
+        return $session;
 
     }
 

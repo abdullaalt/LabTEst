@@ -47,4 +47,8 @@ abstract class Models{
         return $this->descriptor->get();
     }
 
+    public function update(){
+        return $this->descriptor->update();
+    }
+
 }

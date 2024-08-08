@@ -130,7 +130,37 @@ class UsersController
 
     private function deleteUser(){
 
+        if (!isset($this->request->getHeaders()['Token'])){
+            return [
+                'error' => true,
+                'code' => 401,
+                'result' => 'Permission denied'
+            ];
+        }
+
         $id = $this->request->getParameters()[0];
+
+        $sessions = new Sessions();
+        $check = $sessions->check($this->request->getHeaders()['Token']);
+        
+        if (!$check) {
+            
+            return [
+                'error' => true,
+                'code' => 401,
+                'result' => 'Permission denied'
+            ];
+
+        }
+
+        if ($check['user_id'] != $id) {
+
+            return [
+                'error' => true,
+                'code' => 401,
+                'result' => 'Permission denied'
+            ];
+        }
 
         $this->model->where('id', '=', $id);
 
@@ -151,6 +181,43 @@ class UsersController
             'error' => false,
             'result' => 'User deleted'
         ];
+
+    }
+
+    private function postIndex(){
+
+        if (!isset($this->request->getHeaders()['Token'])){
+            return [
+                'error' => true,
+                'code' => 401,
+                'result' => 'Permission denied'
+            ];
+        }
+
+        $data = $this->request->get();
+
+        $sessions = new Sessions();
+
+        $check = $sessions->check($this->request->getHeaders()['Token']);
+        
+        if (!$check) {
+            
+            return [
+                'error' => true,
+                'code' => 401,
+                'result' => 'Permission denied'
+            ];
+
+        }
+
+        $this->request->setParameters([$check['user_id']]);
+        $this->model->where('id', '=', $check['user_id']);
+        $data['password'] = md5($data['password']);
+        $this->model->fill($data);
+
+        $user = $this->model->update();
+
+        return $this->getUser();
 
     }
 

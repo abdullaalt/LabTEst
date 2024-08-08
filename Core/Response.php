@@ -15,7 +15,7 @@ class Response{
             echo json_encode($data['result']);            
 
         }else{
-
+          
             http_response_code($data['code'] ?? 500);
 
             echo json_encode($data['result']);

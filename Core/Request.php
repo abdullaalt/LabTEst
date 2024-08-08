@@ -8,10 +8,13 @@ class Request{
     private $parameters;
     private $method;
 
+    private $headers = [];
+
     public function __construct(){
 
         $this->uri = $_SERVER['REQUEST_URI'];
         $this->method = $_SERVER['REQUEST_METHOD'];
+        $this->headers = getallheaders();
         $this->splitURI();
 
     }
@@ -48,6 +51,12 @@ class Request{
 
     }
 
+    public function getHeaders(){
+
+        return $this->headers;
+
+    }
+
     public function getAction(){
 
         return $this->action;
@@ -78,6 +87,10 @@ class Request{
 
     public function get(){
 
+        if ($this->method == 'PATCH') {
+            return $this->patchGet();
+        }
+
         $result = [];
 
         foreach ($_POST as $key => $value) {
@@ -85,6 +98,14 @@ class Request{
         }
 
         return $result;
+
+    }
+
+    public function patchGet(){
+
+        parse_str(file_get_contents("php://input"), $PATCH);
+//die($PATCH['nickname']);
+        return $PATCH;
 
     }
 
