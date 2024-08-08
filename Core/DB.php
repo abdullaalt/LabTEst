@@ -104,4 +104,32 @@ class DB{
 
     }
 
+    public function delete(){
+
+        $this->query = 'DELETE FROM ' . $this->table;
+
+        if (count($this->wheres) > 0) {
+
+            $this->query .= ' WHERE ';
+            foreach ($this->wheres as $where) {
+                $this->query .= $where[0] . $where[1] . ':' . $where[0] . ' AND ';
+            }
+
+            $this->query = rtrim($this->query, ' AND ');
+
+        }
+
+        $stmt = $this->pdo->prepare($this->query);
+
+        if (count($this->wheres) > 0) {
+
+            foreach ($this->wheres as $where) {
+                $stmt->bindParam(':' . $where[0], $where[2]);
+            }
+
+        }
+
+        $stmt->execute();
+    }
+
 }

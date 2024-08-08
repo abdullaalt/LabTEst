@@ -39,4 +39,9 @@ abstract class Models{
         return $this->descriptor->first();
     }
 
+    public function delete(){
+
+        return $this->descriptor->delete();
+    }
+
 }

@@ -21,6 +21,13 @@ class UsersController
 
     public function run(){
 
+        if (is_numeric($this->request->getAction())){
+
+            $this->request->setParameters([$this->request->getAction()]);
+            $this->request->setAction('user');
+
+        }
+
         $function = strtolower($this->request->getMethod()) . ucfirst($this->request->getAction());
 
         if (!method_exists($this, $function)) {
@@ -92,6 +99,57 @@ class UsersController
         return [
             'error' => false,
             'result' => $user
+        ];
+
+    }
+
+    private function getUser(){
+
+        $id = $this->request->getParameters()[0];
+
+        $this->model->where('id', '=', $id);
+
+        $user = $this->model->first();
+
+        if (!$user) {
+
+            return [
+                'error' => true,
+                'result' => 'User not found'
+            ];
+
+        }
+
+        unset($user['password']);
+
+        return [
+            'error' => false,
+            'result' => $user
+        ];
+    }
+
+    private function deleteUser(){
+
+        $id = $this->request->getParameters()[0];
+
+        $this->model->where('id', '=', $id);
+
+        $user = $this->model->first();
+
+        if (!$user) {
+
+            return [
+                'error' => true,
+                'result' => 'User not found'
+            ];
+
+        }
+
+        $this->model->delete();
+
+        return [
+            'error' => false,
+            'result' => 'User deleted'
         ];
 
     }

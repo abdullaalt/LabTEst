@@ -54,10 +54,20 @@ class Request{
 
     }
 
+    public function setAction($action){
+
+        $this->action = $action;
+    }
+
     public function getParameters(){
 
         return $this->parameters;
 
+    }
+
+    public function setParameters($parameters){
+
+        $this->parameters = $parameters;
     }
 
     public function getMethod(){
