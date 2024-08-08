@@ -16,7 +16,7 @@ class Users extends Models{
 
     public function getUsers(){
 
-        return $this->descriptor->getRecords();
+        return $this->descriptor->get();
 
     }
 

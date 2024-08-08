@@ -40,7 +40,7 @@ class UsersController
 
     }
 
-    private function getUsers(){
+    private function getIndex(){
 
         $users = $this->model->getUsers();
 

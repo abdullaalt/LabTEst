@@ -8,7 +8,7 @@ class DB{
     private $pdo;
     private $stmt;
 
-    private $wheres;
+    private $wheres = [];
 
     private string $query;
 
@@ -28,10 +28,35 @@ class DB{
 
     }
 
-    protected function get(){
+    public function get(){
 
+        $this->query = 'SELECT * FROM ' . $this->table;
+
+        if (count($this->wheres) > 0) {
+
+            $this->query .= ' WHERE ';
+            foreach ($this->wheres as $where) {
+                $this->query .= $where[0] . $where[1] . ':' . $where[0] . ' AND ';
+            }
+
+            $this->query = rtrim($this->query, ' AND ');
+
+        }
+
+        $this->query .= ' ORDER BY id DESC';
+        
         $stmt = $this->pdo->prepare($this->query);
+
+        if (count($this->wheres) > 0) {
+
+            foreach ($this->wheres as $where) {
+                $stmt->bindParam(':' . $where[0], $where[2]);
+            }
+
+        }
+        
         $stmt->execute();
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     }

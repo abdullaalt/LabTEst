@@ -40,8 +40,11 @@ abstract class Models{
     }
 
     public function delete(){
-
         return $this->descriptor->delete();
+    }
+
+    public function get(){
+        return $this->descriptor->get();
     }
 
 }
