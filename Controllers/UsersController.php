@@ -45,11 +45,33 @@ class UsersController
 
     private function postRegister(){
 
-        $this->model->fill($this->request->get());
+        $data = $this->request->get();
 
-        $data = $this->model->save();
+        $data['password'] = md5($data['password']);
 
-        return $data;
+        $this->model->fill($data);
+
+        $user = $this->model->save();
+
+        unset($user['password']);
+
+        return [
+            'error' => false,
+            'result' => $user
+        ];
+
+    }
+
+    private function postLogin(){
+
+        $data = $this->request->get();
+
+        $data['password'] = md5($data['password']);
+
+        $this->model->where('email', '=', $data['email']);
+        $this->model->where('password', '=', $data['password']);
+
+        $user = $this->model->first();
 
     }
 

@@ -30,4 +30,13 @@ abstract class Models{
 
     }
 
+    public function where($column, $operator, $value){
+        $this->descriptor->where($column, $operator, $value);
+        return $this;
+    }
+
+    public function first(){
+        return $this->descriptor->first();
+    }
+
 }
