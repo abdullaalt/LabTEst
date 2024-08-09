@@ -32,32 +32,11 @@ class DB{
 
         $this->query = 'SELECT * FROM ' . $this->table;
 
-        if (count($this->wheres) > 0) {
-
-            $this->query .= ' WHERE ';
-            foreach ($this->wheres as $where) {
-                $this->query .= $where[0] . $where[1] . ':' . $where[0] . ' AND ';
-            }
-
-            $this->query = rtrim($this->query, ' AND ');
-
-        }
-
-        $this->query .= ' ORDER BY id DESC';
+        $this->prepareWhere();
         
-        $stmt = $this->pdo->prepare($this->query);
+        $this->stmt->execute();
 
-        if (count($this->wheres) > 0) {
-
-            foreach ($this->wheres as $where) {
-                $stmt->bindParam(':' . $where[0], $where[2]);
-            }
-
-        }
-        
-        $stmt->execute();
-
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     }
 
@@ -73,6 +52,22 @@ class DB{
 
         $this->query = rtrim($this->query, ', ');
 
+        $this->prepareWhere();
+
+        foreach($this->data as $key => $value){
+            $this->stmt->bindParam(':'.$key, $this->data[$key]);
+        }
+
+        $this->stmt->execute();
+
+        $data = $this->stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $data; 
+
+    }
+
+    public function prepareWhere(){
+
         if (count($this->wheres) > 0) {
 
             $this->query .= ' WHERE ';
@@ -84,25 +79,17 @@ class DB{
 
         }
 
-        $stmt = $this->pdo->prepare($this->query);
+        $this->query .= ' ORDER BY id DESC';
+
+        $this->stmt = $this->pdo->prepare($this->query);
 
         if (count($this->wheres) > 0) {
 
             foreach ($this->wheres as $where) {
-                $stmt->bindParam(':' . $where[0], $where[2]);
+                $this->stmt->bindParam(':' . $where[0], $where[2]);
             }
 
         }
-
-        foreach($this->data as $key => $value){
-            $stmt->bindParam(':'.$key, $this->data[$key]);
-        }
-
-        $stmt->execute();
-
-        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-        return $data; 
 
     }
 
@@ -147,32 +134,11 @@ class DB{
 
         $this->query = 'SELECT * FROM ' . $this->table;
 
-        if (count($this->wheres) > 0) {
-
-            $this->query .= ' WHERE ';
-            foreach ($this->wheres as $where) {
-                $this->query .= $where[0] . $where[1] . ':' . $where[0] . ' AND ';
-            }
-
-            $this->query = rtrim($this->query, ' AND ');
-
-        }
-
-        $this->query .= ' ORDER BY id DESC LIMIT 1';
+        $this->prepareWhere();
         
-        $stmt = $this->pdo->prepare($this->query);
+        $this->stmt->execute();
 
-        if (count($this->wheres) > 0) {
-
-            foreach ($this->wheres as $where) {
-                $stmt->bindParam(':' . $where[0], $where[2]);
-            }
-
-        }
-        
-        $stmt->execute();
-
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $this->stmt->fetch(\PDO::FETCH_ASSOC);
 
     }
 
@@ -180,28 +146,9 @@ class DB{
 
         $this->query = 'DELETE FROM ' . $this->table;
 
-        if (count($this->wheres) > 0) {
+        $this->prepareWhere();
 
-            $this->query .= ' WHERE ';
-            foreach ($this->wheres as $where) {
-                $this->query .= $where[0] . $where[1] . ':' . $where[0] . ' AND ';
-            }
-
-            $this->query = rtrim($this->query, ' AND ');
-
-        }
-
-        $stmt = $this->pdo->prepare($this->query);
-
-        if (count($this->wheres) > 0) {
-
-            foreach ($this->wheres as $where) {
-                $stmt->bindParam(':' . $where[0], $where[2]);
-            }
-
-        }
-
-        $stmt->execute();
+        $this->stmt->execute();
     }
 
 }

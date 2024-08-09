@@ -212,7 +212,10 @@ class UsersController
 
         $this->request->setParameters([$check['user_id']]);
         $this->model->where('id', '=', $check['user_id']);
-        $data['password'] = md5($data['password']);
+        if (isset($data['password']) && !empty($data['password'])) {
+            $data['password'] = md5($data['password']);
+        }
+        
         $this->model->fill($data);
 
         $user = $this->model->update();
